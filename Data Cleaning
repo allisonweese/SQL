@@ -1,0 +1,68 @@
+Finding duplicate data in the film table
+
+CREATE VIEW film_duplicates AS
+SELECT film_id, title, COUNT(*)
+FROM film
+GROUP BY film_id, title
+HAVING COUNT(*) > 1;
+DELETE FROM film
+WHERE film_id IN (SELECT film_id FROM film_duplicates);
+
+Finding duplicate data in the customer table
+
+CREATE VIEW customer_duplicates AS
+SELECT customer_id, first_name, last_name, COUNT(*)
+FROM customer
+GROUP BY customer_id, first_name, last_name
+HAVING COUNT(*) > 1;
+DELETE FROM customer
+WHERE customer_id IN (SELECT customer_id FROM customer_duplicates);
+
+Finding missing values in the film table
+
+CREATE VIEW customer_duplicates AS
+SELECT customer_id, first_name, last_name, COUNT(*)
+FROM customer
+GROUP BY customer_id, first_name, last_name
+HAVING COUNT(*) > 1;
+DELETE FROM customer
+WHERE customer_id IN (SELECT customer_id FROM customer_duplicates);
+
+Finding missing values in the customer table
+
+SELECT *
+FROM customer
+WHERE first_name IS NULL
+OR last_name IS NULL;
+-- Assuming handling of missing values
+CREATE VIEW customer_missing_values AS
+SELECT customer_id, COALESCE(first_name, 'Unknown') AS first_name,
+COALESCE(last_name, 'Unknown') AS last_name
+FROM customer
+WHERE first_name IS NULL
+OR last_name IS NULL;
+
+Finding non-uniform values in the customer table
+
+SELECT *
+FROM customer
+WHERE first_name ~ '[0-9]'
+OR last_name ~ '[0-9]';
+-- Assuming handling of non-uniform values
+UPDATE customer
+SET first_name = regexp_replace(first_name, '[0-9]', '', 'g'),
+last_name = regexp_replace(last_name, '[0-9]', '', 'g')
+WHERE first_name ~ '[0-9]'
+OR last_name ~ '[0-9]';
+
+Data summary for film table
+
+SELECT MIN(release_year), MAX(release_year), AVG(release_year), COUNT(release_year)
+FROM film;
+
+Data summary from customer table
+
+SELECT first_name, COUNT(*)
+FROM customer
+GROUP BY first_name
+ORDER BY COUNT(*) DESC;
